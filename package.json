@@ -11,13 +11,28 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "build": "tsc -p .",
-    "ts": "tsc --noEmit && cd client && tsc --noEmit",
-    "lint": "npm run ts && eslint . --ext ts,tsx --ignore-pattern node_modules/",
-    "lint:fix": "npm run ts && eslint . --ext ts,tsx --ignore-pattern node_modules/ --quiet --fix",
-    "stylelint": "stylelint **/*.{css,scss}",
-    "stylelint:fix": "stylelint **/*.{css,scss} --fix",
+    "tslint": "tsc --noEmit && cd client && tsc --noEmit",
+    "lint": "eslint . --ext ts,tsx --ignore-pattern node_modules/",
+    "lint:fix": "eslint . --ext ts,tsx --ignore-pattern node_modules/ --quiet --fix",
+    "stylelint": "stylelint client/src/**/*.{css,scss}",
+    "stylelint:fix": "stylelint client/src/**/*.{css,scss} --fix",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "npm run build && cd client && npm install && npm run build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsc --noEmit && lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ],
+    "*.{css,scss}": [
+      "stylelint --fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
