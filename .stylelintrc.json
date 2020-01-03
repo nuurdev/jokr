@@ -1,7 +1,11 @@
 {
   "extends": "stylelint-config-standard",
   "ignoreFiles": "client/build/*/**",
+  "plugins": [
+    "stylelint-no-unused-selectors"
+  ],
   "rules": {
-    "declaration-no-important": true
+    "declaration-no-important": true,
+    "plugin/no-unused-selectors": true
   }
 }
