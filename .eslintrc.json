@@ -33,7 +33,6 @@
     "no-console": "error",
     "no-alert": "error",
     "object-shorthand": [2, "consistent"],
-    // "no-unused-vars": "off",
     // React rules
     "react/jsx-filename-extension": [
       2,
