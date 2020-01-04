@@ -5,7 +5,12 @@
     "es6": true,
     "jest": true
   },
-  "extends": ["plugin:react/recommended", "airbnb", "prettier"],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "airbnb",
+    "prettier"
+  ],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
@@ -26,7 +31,9 @@
     "import/extensions": 0,
     "comma-dangle": ["error", "never"],
     "no-console": "error",
+    "no-alert": "error",
     "object-shorthand": [2, "consistent"],
+    // "no-unused-vars": "off",
     // React rules
     "react/jsx-filename-extension": [
       2,
