@@ -10,6 +10,10 @@ dotenv.config();
 const app: Application = express();
 
 // Connect to DB
+
+// const connectionString =
+//   process.env.DB_CONNECT || 'mongodb://localhost:27017/jokr';
+
 mongoose.connect(
   process.env.DB_CONNECT,
   { useNewUrlParser: true, useUnifiedTopology: true },
