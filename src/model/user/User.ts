@@ -1,15 +1,18 @@
 import mongoose from 'mongoose';
+import { UserDoc } from './types';
 
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     min: 6,
     max: 20
   },
   email: {
     type: String,
     required: true,
+    unique: true,
     min: 6,
     max: 255
   },
@@ -33,4 +36,4 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model<UserDoc>('User', userSchema);

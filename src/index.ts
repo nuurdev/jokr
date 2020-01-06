@@ -1,13 +1,6 @@
 /* eslint-disable no-console */
-import express, { Application } from 'express';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import path from 'path';
-import authRoute from './routes/auth';
-
-dotenv.config();
-
-const app: Application = express();
+import app from './app';
 
 // Connect to DB
 const connectionString =
@@ -26,18 +19,6 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   // We're connected!
-});
-
-// Middlewares
-app.use(express.json());
-
-app.use(express.static(path.join(__dirname, '../client/build')));
-
-// Route Middlewares
-app.use('/api/user', authRoute);
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
 const port = process.env.PORT || 5000;

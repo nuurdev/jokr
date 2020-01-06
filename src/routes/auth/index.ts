@@ -2,7 +2,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import User from '../../model/User';
+import User from '../../model/user/User';
 // import verify from './verifyToken';
 import { registerValidation } from './validation';
 
