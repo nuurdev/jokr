@@ -1,15 +1,5 @@
 import Joi from '@hapi/joi';
-
-interface RegisterRequest {
-  username: string;
-  email: string;
-  password: string;
-}
-
-interface LoginRequest {
-  username: string;
-  password: string;
-}
+import { LoginRequest, RegisterRequest } from './types';
 
 const registerValidation = (data: RegisterRequest): Joi.ValidationResult => {
   const schema = Joi.object({
@@ -23,8 +13,10 @@ const registerValidation = (data: RegisterRequest): Joi.ValidationResult => {
       .email()
       .required(),
     password: Joi.string()
-      .min(6)
+      .min(8)
       .max(1024)
+      // Min 8 || 1 Upper || 1 Lower || 1 Number || no space
+      .pattern(/^(?=.*\d)(?=.*[a-zA-Z])[^\s]{8,1024}$/)
       .required()
   });
   return schema.validate(data);
@@ -38,8 +30,9 @@ const loginValidation = (data: LoginRequest): Joi.ValidationResult => {
       .pattern(/^[\w-]{6,20}/)
       .required(),
     password: Joi.string()
-      .min(6)
+      .min(8)
       .max(1024)
+      .pattern(/^(?=.*\d)(?=.*[a-zA-Z])[^\s]{8,1024}$/)
       .required()
   });
   return schema.validate(data);
