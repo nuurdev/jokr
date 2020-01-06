@@ -1,7 +1,7 @@
 import request from 'supertest';
-import setupDB from '../../utils/test-setup';
-import User from '../../model/user/User';
-import app from '../../app';
+import setupDB from '../../../utils/test-setup';
+import User from '../../../model/user';
+import app from '../../../app';
 
 // Setup a Test Database
 setupDB('auth-testing');
