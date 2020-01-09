@@ -28,6 +28,8 @@ it('should save user to database', async done => {
   expect(res.body.user.email).toEqual('ninjanuur@gmail.com');
   expect(res.body.user.isAdmin).toEqual(false);
   expect(res.body.user.confirmed).toEqual(false);
+  expect(res.body.user.resetPasswordToken).toEqual(null);
+  expect(res.body.user.resetPasswordExpires).toEqual(null);
 
   done();
 });

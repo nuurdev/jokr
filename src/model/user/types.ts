@@ -15,4 +15,10 @@ export interface UserDoc extends mongoose.Document {
     type: string;
     required: boolean;
   };
+  resetPasswordToken: {
+    type: string;
+  };
+  resetPasswordExpires: {
+    type: Date;
+  };
 }
