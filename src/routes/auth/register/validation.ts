@@ -6,7 +6,7 @@ const registerValidation = (data: RegisterRequest): Joi.ValidationResult => {
     username: Joi.string()
       .min(6)
       .max(20)
-      .pattern(/^[\w-]{6,20}/)
+      .pattern(/^[\w-]{6,20}$/)
       .required(),
     email: Joi.string()
       .min(6)
