@@ -94,7 +94,7 @@ router.post('/reset-password', async (req, res) => {
   const { token, newPassword, newPasswordConfirm } = req.body;
 
   if (newPassword !== newPasswordConfirm) {
-    res.status(400).send({ message: 'Passwords do not match' });
+    return res.status(400).send({ message: 'Passwords do not match' });
   }
 
   const foundUser = await user.findOne({
