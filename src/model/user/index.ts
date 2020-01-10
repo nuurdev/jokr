@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpires: {
     type: Date
   },
+  confirmEmailToken: {
+    type: String
+  },
+  confirmEmailExpires: {
+    type: Date
+  },
   date: {
     type: Date,
     default: Date.now

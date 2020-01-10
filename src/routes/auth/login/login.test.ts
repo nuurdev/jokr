@@ -13,7 +13,7 @@ it('should handle login', async done => {
       email: 'ninjanuur@gmail.com',
       password: 'ninjanuur01'
     })
-    .expect(200);
+    .expect(201);
 
   // Sad path
   const response = await request(app)

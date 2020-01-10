@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import user from '../../../model/user';
+import User from '../../../model/user';
 import {
   forgotPasswordValidation,
   resetPasswordValidation
@@ -22,7 +22,7 @@ router.post('/forgot-password', async (req, res) => {
 
   const { email } = req.body;
 
-  const foundUser = await user.findOneAndUpdate(
+  const foundUser = await User.findOneAndUpdate(
     { email },
     {
       resetPasswordToken: token,
@@ -74,7 +74,7 @@ router.post('/forgot-password', async (req, res) => {
 // Check if token is valid
 router.get('/reset-password', async (req, res) => {
   const { token } = req.query;
-  const foundUser = await user.findOne({
+  const foundUser = await User.findOne({
     resetPasswordToken: token
   });
 
@@ -97,7 +97,7 @@ router.post('/reset-password', async (req, res) => {
     return res.status(400).send({ message: 'Passwords do not match' });
   }
 
-  const foundUser = await user.findOne({
+  const foundUser = await User.findOne({
     resetPasswordToken: token
   });
 
@@ -108,7 +108,7 @@ router.post('/reset-password', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    const userUpdated = await user.findOneAndUpdate(
+    const userUpdated = await User.findOneAndUpdate(
       { email: foundUser.email },
       {
         password: hashedPassword,
