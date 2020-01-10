@@ -1,24 +1,9 @@
 import mongoose from 'mongoose';
 
 export interface UserDoc extends mongoose.Document {
-  username: {
-    type: string;
-    required: boolean;
-    unique: boolean;
-  };
-  email: {
-    type: string;
-    unique: boolean;
-    required: boolean;
-  };
-  password: {
-    type: string;
-    required: boolean;
-  };
-  resetPasswordToken: {
-    type: string;
-  };
-  resetPasswordExpires: {
-    type: Date;
-  };
+  username: string;
+  email: string;
+  password: string;
+  resetPasswordToken: string;
+  resetPasswordExpires: Date;
 }
