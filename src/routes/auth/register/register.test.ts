@@ -4,7 +4,7 @@ import User from '../../../model/user';
 import app from '../../../app';
 
 // Setup a Test Database
-setupDB('auth-testing');
+setupDB('register-testing');
 
 it('should save user to database', async done => {
   const res = await request(app)
@@ -30,7 +30,6 @@ it('should save user to database', async done => {
   expect(res.body.user.confirmed).toEqual(false);
   expect(res.body.user.resetPasswordToken).toBeFalsy();
   expect(res.body.user.resetPasswordExpires).toBeFalsy();
-
   done();
 });
 
@@ -46,7 +45,6 @@ it('should return error for invalid username', async done => {
   // Check the response
   expect(res.status).toEqual(400);
   expect(res.body.message).toBeTruthy();
-
   done();
 });
 
@@ -62,7 +60,6 @@ it('should return error for invalid email', async done => {
   // Check the response
   expect(res.status).toEqual(400);
   expect(res.body.message).toBeTruthy();
-
   done();
 });
 
@@ -78,6 +75,5 @@ it('should return error for invalid password', async done => {
   // Check the response
   expect(res.status).toEqual(400);
   expect(res.body.message).toBeTruthy();
-
   done();
 });
