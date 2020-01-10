@@ -43,6 +43,7 @@ it('should send reset email', async done => {
   expect(sendMailMock).toHaveBeenCalledTimes(1);
 
   // Check that the token exists on the User model
+  // No need as email is only sent after user updates successfully
   const updatedUser = await User.findOne({
     email: savedUser.email
   });
