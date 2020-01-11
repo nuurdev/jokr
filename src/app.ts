@@ -3,6 +3,7 @@ import express, { Application } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import registerRoute from './routes/auth/register';
+import fetchUserRoute from './routes/auth/fetch';
 import loginRoute from './routes/auth/login';
 import forgotPasswordRoute from './routes/reset/password';
 import confirmEmailRoute from './routes/confirm/email';
@@ -20,7 +21,8 @@ app.use('/api/user', [
   registerRoute,
   loginRoute,
   forgotPasswordRoute,
-  confirmEmailRoute
+  confirmEmailRoute,
+  fetchUserRoute
 ]);
 
 app.get('*', (req, res) => {
