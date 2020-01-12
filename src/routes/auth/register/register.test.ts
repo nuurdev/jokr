@@ -54,3 +54,6 @@ describe('/api/user/register', () => {
     done();
   });
 });
+
+// Should not be able to register users with same email
+// Shoul not be able to register users with same username

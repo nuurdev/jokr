@@ -79,3 +79,5 @@ describe('/api/user/confirm-email', () => {
     done();
   });
 });
+
+// If user is confirmed, should not send confirmation email

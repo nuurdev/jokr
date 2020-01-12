@@ -172,3 +172,5 @@ describe('/api/user/reset-password', () => {
     done();
   });
 });
+
+// Should not be able to use same token to reset password twice
