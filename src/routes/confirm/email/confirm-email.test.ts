@@ -3,6 +3,7 @@ import request from 'supertest';
 import setupDB from '../../../utils/test-setup';
 import User from '../../../model/user';
 import app from '../../../app';
+import { registerReq } from '../../../utils/test-data';
 
 setupDB('confirm-email-testing');
 
@@ -17,68 +18,64 @@ nodemailer.createTransport.mockReturnValue({
   sendMail: sendMailMock
 });
 
-it('should send confirmation email', async done => {
-  const response = await request(app)
-    .post('/api/user/register')
-    .send({
-      username: 'testuser',
-      email: 'testuser@gmail.com',
-      password: 'testpassword1'
-    });
+describe('/api/user/confirm-email', () => {
+  it('should send confirmation email', async done => {
+    const response = await request(app)
+      .post('/api/user/register')
+      .send({ ...registerReq });
 
-  const { token } = response.body;
+    const { token } = response.body;
 
-  // Sad path
-  await request(app)
-    .post('/api/user/confirmation-email')
-    .set('auth-token', 'invalid-token')
-    .send();
-  expect(sendMailMock).toHaveBeenCalledTimes(0);
-
-  // Happy path
-  const res = await request(app)
-    .post('/api/user/confirmation-email')
-    .set('auth-token', token)
-    .send();
-  expect(res.status).toEqual(200);
-  expect(sendMailMock).toHaveBeenCalledTimes(1);
-  done();
-});
-
-it('should confirm user', async done => {
-  const response = await request(app)
-    .post('/api/user/register')
-    .send({
-      username: 'testuser',
-      email: 'testuser@gmail.com',
-      password: 'testpassword1'
-    });
-
-  const { token } = response.body;
-
-  await request(app)
-    .post('/api/user/confirmation-email')
-    .set('auth-token', token)
-    .send();
-
-  const updatedUser = await User.findOne({
-    email: 'testuser@gmail.com'
+    await request(app)
+      .post('/api/user/confirmation-email')
+      .set('auth-token', token)
+      .send()
+      .expect(200);
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    done();
   });
 
-  const { confirmEmailToken } = updatedUser;
-
-  await request(app)
-    .post('/api/user/confirm-email')
-    .set('auth-token', token)
-    .send({ token: confirmEmailToken })
-    .expect(200);
-
-  const finalUser = await User.findOne({
-    email: 'testuser@gmail.com'
+  it('should not send confirmation email', async done => {
+    await request(app)
+      .post('/api/user/confirmation-email')
+      .set('auth-token', 'invalid-token')
+      .send()
+      .expect(401);
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    done();
   });
 
-  expect(finalUser.confirmed).toEqual(true);
-  expect(finalUser.confirmEmailToken).toEqual(null);
-  expect(finalUser.confirmEmailExpires).toEqual(null);
-  done();
+  it('should confirm user', async done => {
+    const response = await request(app)
+      .post('/api/user/register')
+      .send({ ...registerReq });
+
+    const { token } = response.body;
+
+    await request(app)
+      .post('/api/user/confirmation-email')
+      .set('auth-token', token)
+      .send();
+
+    const user = await User.findOne({
+      email: registerReq.email
+    });
+
+    const { confirmEmailToken } = user;
+
+    await request(app)
+      .post('/api/user/confirm-email')
+      .set('auth-token', token)
+      .send({ token: confirmEmailToken })
+      .expect(200);
+
+    const updatedUser = await User.findOne({
+      email: registerReq.email
+    });
+
+    expect(updatedUser.confirmed).toEqual(true);
+    expect(updatedUser.confirmEmailToken).toEqual(null);
+    expect(updatedUser.confirmEmailExpires).toEqual(null);
+    done();
+  });
 });
