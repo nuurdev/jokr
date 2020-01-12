@@ -40,7 +40,8 @@ const setupDB = (databaseName: string): void => {
     const url = `mongodb://127.0.0.1/${databaseName}`;
     await mongoose.connect(url, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useFindAndModify: false
     });
   });
 

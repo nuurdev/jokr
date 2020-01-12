@@ -8,3 +8,9 @@ export const loginReq = {
   username: 'testuser',
   password: 'testpassword1'
 };
+
+export const resetPasswordReq = {
+  newPassword: 'newpassword1',
+  newPasswordConfirm: 'newpassword1',
+  token: ''
+};
