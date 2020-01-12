@@ -3,6 +3,11 @@ import request from 'supertest';
 import setupDB from '../../../utils/test-setup';
 import User from '../../../model/user';
 import app from '../../../app';
+import {
+  registerReq,
+  resetPasswordReq,
+  loginReq
+} from '../../../utils/test-data';
 
 setupDB('reset-password-testing');
 
@@ -17,121 +22,153 @@ nodemailer.createTransport.mockReturnValue({
   sendMail: sendMailMock
 });
 
-it('should send reset email', async done => {
-  // Sad path
-  await request(app)
-    .post('/api/user/forgot-password')
-    .send({
-      email: 'non-existent@gmail.com'
-    });
-  expect(sendMailMock).toHaveBeenCalledTimes(0);
+describe('/api/user/reset-password', () => {
+  it('should send reset email', async done => {
+    const user = new User({ ...registerReq });
+    const savedUser = await user.save();
 
-  // Happy path
-  const user = new User({
-    username: 'testuser',
-    email: 'testuser@gmail.com',
-    password: 'testpassword1'
+    await request(app)
+      .post('/api/user/forgot-password')
+      .send({
+        email: savedUser.email
+      });
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    done();
   });
 
-  const savedUser = await user.save();
+  it('should not send reset email', async done => {
+    await request(app)
+      .post('/api/user/forgot-password')
+      .send({
+        ...registerReq,
+        email: 'invalid!'
+      })
+      .expect(400);
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    done();
+  });
 
-  await request(app)
-    .post('/api/user/forgot-password')
-    .send({
+  it('should pass token verification', async done => {
+    const user = new User({ ...registerReq });
+    const savedUser = await user.save();
+
+    await request(app)
+      .post('/api/user/forgot-password')
+      .send({
+        email: savedUser.email
+      });
+
+    const userWithToken = await User.findOne({
       email: savedUser.email
     });
-  expect(sendMailMock).toHaveBeenCalledTimes(1);
+    const token = userWithToken.resetPasswordToken;
 
-  // Check that the token exists on the User model
-  // No need as email is only sent after user updates successfully
-  const updatedUser = await User.findOne({
-    email: savedUser.email
-  });
-  expect(updatedUser.resetPasswordToken).toBeTruthy();
-  expect(updatedUser.resetPasswordExpires).toBeTruthy();
-  done();
-});
-
-it('should verify token', async done => {
-  const user = new User({
-    username: 'testuser',
-    email: 'testuser@gmail.com',
-    password: 'testpassword1'
+    await request(app)
+      .get(`/api/user/reset-password?token=${token}`)
+      .expect(200);
+    done();
   });
 
-  const savedUser = await user.save();
+  it('should fail token verification', async done => {
+    const user = new User({ ...registerReq });
+    const savedUser = await user.save();
+    const emptyToken = savedUser.resetPasswordToken;
 
-  // Sad path - No token associated with user yet
-  const emptyToken = savedUser.resetPasswordToken;
-  const response = await request(app)
-    .get(`/api/user/reset-password?token=${emptyToken}`)
-    .send({
+    await request(app)
+      .get(`/api/user/reset-password?token=${emptyToken}`)
+      .send({
+        email: savedUser.email
+      })
+      .expect(400);
+    done();
+  });
+
+  it('should set new password', async done => {
+    const user = new User({ ...registerReq });
+    const savedUser = await user.save();
+
+    await request(app)
+      .post('/api/user/forgot-password')
+      .send({
+        email: savedUser.email
+      });
+
+    const userWithToken = await User.findOne({
       email: savedUser.email
     });
-  expect(response.status).toEqual(400);
+    const token = userWithToken.resetPasswordToken;
 
-  // Happy path
-  await request(app)
-    .post('/api/user/forgot-password')
-    .send({
+    await request(app)
+      .post('/api/user/reset-password')
+      .send({
+        ...resetPasswordReq,
+        token: token
+      })
+      .expect(200);
+
+    await request(app)
+      .post('/api/user/login')
+      .send({
+        ...loginReq,
+        password: resetPasswordReq.newPassword
+      })
+      .expect(200);
+    done();
+  });
+
+  it('should decline old password', async done => {
+    const user = new User({ ...registerReq });
+    const savedUser = await user.save();
+
+    await request(app)
+      .post('/api/user/forgot-password')
+      .send({
+        email: savedUser.email
+      });
+
+    const updatedUser = await User.findOne({
+      email: savedUser.email
+    });
+    const token = updatedUser.resetPasswordToken;
+
+    await request(app)
+      .post('/api/user/reset-password')
+      .send({
+        ...resetPasswordReq,
+        token: token
+      });
+
+    await request(app)
+      .post('/api/user/login')
+      .send({ ...loginReq })
+      .expect(400);
+    done();
+  });
+
+  it('should not set a new password', async done => {
+    const user = new User({ ...registerReq });
+    const savedUser = await user.save();
+
+    await request(app)
+      .post('/api/user/forgot-password')
+      .send({
+        email: savedUser.email
+      });
+
+    const updatedUser = await User.findOne({
       email: savedUser.email
     });
 
-  const updatedUser = await User.findOne({
-    email: savedUser.email
+    const token = updatedUser.resetPasswordToken;
+
+    await request(app)
+      .post('/api/user/reset-password')
+      .send({
+        newPassword: 'newpassword1',
+        newPasswordConfirm: 'newpassword2',
+        token: token
+      })
+      .expect(400);
+    done();
   });
-
-  const token = updatedUser.resetPasswordToken;
-  const res = await request(app).get(`/api/user/reset-password?token=${token}`);
-  expect(res.status).toEqual(200);
-  done();
-});
-
-it('should set new password', async done => {
-  const user = new User({
-    username: 'testuser',
-    email: 'testuser@gmail.com',
-    password: 'oldpassword1'
-  });
-
-  const savedUser = await user.save();
-
-  await request(app)
-    .post('/api/user/forgot-password')
-    .send({
-      email: savedUser.email
-    });
-
-  const updatedUser = await User.findOne({
-    email: savedUser.email
-  });
-
-  const token = updatedUser.resetPasswordToken;
-
-  // Sad path
-  const response = await request(app)
-    .post('/api/user/reset-password')
-    .send({
-      newPassword: 'newpassword1',
-      newPasswordConfirm: 'newpassword2',
-      token: token
-    });
-  expect(response.status).toEqual(400);
-
-  const res = await request(app)
-    .post('/api/user/reset-password')
-    .send({
-      newPassword: 'newpassword1',
-      newPasswordConfirm: 'newpassword1',
-      token: token
-    });
-  expect(res.status).toEqual(200);
-
-  const latestUser = await User.findOne({
-    email: savedUser.email
-  });
-
-  expect(latestUser.resetPasswordToken).toBeFalsy();
-  expect(latestUser.resetPasswordExpires).toBeFalsy();
-  done();
 });

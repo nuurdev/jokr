@@ -108,7 +108,7 @@ router.post('/reset-password', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    const userUpdated = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { email: foundUser.email },
       {
         password: hashedPassword,
@@ -117,9 +117,6 @@ router.post('/reset-password', async (req, res) => {
       },
       { new: true }
     );
-
-    console.log(userUpdated);
-
     res.status(200).send('Password updated successfully');
   } else {
     res.status(400).send('Unable to update your password');

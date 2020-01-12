@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import request from 'supertest';
 import app from '../../../app';
 import setupDB from '../../../utils/test-setup';
