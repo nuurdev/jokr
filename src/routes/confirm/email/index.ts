@@ -14,16 +14,18 @@ router.post('/confirmation-email', verify, async (req, res) => {
 
   const { _id } = req.body.user;
 
-  const foundUser = await User.findOneAndUpdate(
-    { _id },
-    {
-      confirmEmailToken: token,
-      confirmEmailExpires: expires
-    },
-    { new: true }
-  );
+  const user = await User.findOne({ _id });
 
-  if (foundUser) {
+  if (user.confirmed) {
+    return res.status(200).send({ message: 'You are already confirmed' });
+  }
+
+  await user.update({
+    confirmEmailToken: token,
+    confirmEmailExpires: expires
+  });
+
+  if (user) {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -36,7 +38,7 @@ router.post('/confirmation-email', verify, async (req, res) => {
 
     const mailOptions = {
       from: 'nuurdev.testing@gmail.com',
-      to: `${foundUser.email}`,
+      to: `${user.email}`,
       subject: 'Confirm email address',
       text:
         'Please confirm your email address.\n\n' +
