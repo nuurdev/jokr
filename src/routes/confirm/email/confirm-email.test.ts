@@ -23,6 +23,7 @@ describe('/api/user/confirm-email', () => {
     const response = await request(app)
       .post('/api/user/register')
       .send({ ...registerReq });
+    expect(sendMailMock).toHaveBeenCalledTimes(1);
 
     const { token } = response.body;
 
@@ -31,7 +32,7 @@ describe('/api/user/confirm-email', () => {
       .set('auth-token', token)
       .send()
       .expect(200);
-    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    expect(sendMailMock).toHaveBeenCalledTimes(2);
     done();
   });
 
@@ -41,7 +42,7 @@ describe('/api/user/confirm-email', () => {
       .set('auth-token', 'invalid-token')
       .send()
       .expect(401);
-    expect(sendMailMock).toHaveBeenCalledTimes(1);
+    expect(sendMailMock).toHaveBeenCalledTimes(2);
     done();
   });
 
