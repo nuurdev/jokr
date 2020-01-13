@@ -20,7 +20,7 @@ router.post('/confirmation-email', verify, async (req, res) => {
     return res.status(200).send({ message: 'You are already confirmed' });
   }
 
-  await user.update({
+  await user.updateOne({
     confirmEmailToken: token,
     confirmEmailExpires: expires
   });
