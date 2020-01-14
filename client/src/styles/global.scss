@@ -1,0 +1,168 @@
+// Override with branding, comment out unchanged
+
+//<---Iniital variable overrides --->//
+$black:         #08090c;
+$black-bis:     #101118;
+$black-ter:     #1c1d2a;
+$grey-darker:   #2b2d42;
+$grey-dark:     #3e4053;
+$grey:          #747e8f;
+$grey-light:    #acb4c4;
+$grey-lighter:  #d5d9e1;
+$grey-lightest: #edf2f4;
+$white-ter:     #f3f6f8;
+$white-bis:     #f8fafb;
+$white:         #fdfdfe;
+$orange:        hsl(14, 100%, 53%);
+$yellow:        hsl(48, 100%, 67%);
+$green:         hsl(141, 53%, 53%);
+$turquoise:     hsl(171, 100%, 41%);
+$cyan:          hsl(204, 71%, 53%);
+$blue:          hsl(217, 71%, 53%);
+$purple:        hsl(271, 100%, 71%);
+$red:           #ef233c;
+
+$family-sans-serif: 'Nunito', BlinkMacSystemFont, -apple-system,
+  'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+  'Droid Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+
+// Unchanged
+// $family-monospace: monospace;
+// $render-mode: optimizeLegibility;
+// $size-1: 3rem;
+// $size-2: 2.5rem;
+// $size-3: 2rem;
+// $size-4: 1.5rem;
+// $size-5: 1.25rem;
+// $size-6: 1rem;
+// $size-7: 0.75rem;
+// $weight-light: 300;
+// $weight-normal: 400;
+// $weight-medium: 500;
+// $weight-semibold: 600;
+// $weight-bold: 700;
+// $block-spacing: 1.5rem;
+// $gap: 32px;
+// $tablet: 769px;
+// $desktop: 960px + (2 * $gap);
+// $widescreen: 1152px + (2 * $gap);
+// $widescreen-enabled: true;
+// $fullhd: 1344px + (2 * $gap);
+// $fullhd-enabled: true;
+// $easing: ease-out;
+// $radius-small: 2px;
+// $radius: 4px;
+// $radius-large: 6px;
+// $radius-rounded: 290486px;
+// $speed: 86ms;
+// $variable-columns: true;
+
+//<---Derived Variables overrides--->//
+$primary: $red;
+// $info: $cyan;
+// $success: $green;
+// $warning: $yellow;
+// $danger: $red;
+
+// $light: $white-ter;
+// $dark: $grey-darker;
+
+// General colors
+// $scheme-main: $white;
+// $scheme-main-bis: $white-bis;
+// $scheme-main-ter: $white-ter;
+// $scheme-invert: $black;
+// $scheme-invert-bis: $black-bis;
+// $scheme-invert-ter: $black-ter;
+
+// $background: $white-ter;
+
+// $border: $grey-lighter;
+// $border-hover: $grey-light;
+// $border-light: $grey-lightest;
+// $border-light-hover: $grey-light;
+
+// Text colors
+// $text: $grey-dark;
+// $text-light: $grey;
+// $text-strong: $grey-darker;
+
+// Code colors
+// $code: $red;
+// $code-background: $background;
+
+// $pre: $text;
+// $pre-background: $background;
+
+// Link colors
+// $link: $blue;
+// $link-visited: $purple;
+
+// $link-hover: $grey-darker;
+// $link-hover-border: $grey-light;
+
+// $link-focus: $grey-darker;
+// $link-focus-border: $blue;
+
+// $link-active: $grey-darker;
+// $link-active-border: $grey-dark;
+
+// Typography
+// $family-primary: $family-sans-serif;
+// $family-secondary: $family-sans-serif;
+// $family-code: $family-monospace;
+
+// $size-small: $size-7;
+// $size-normal: $size-6;
+// $size-medium: $size-5;
+// $size-large: $size-4;
+
+// Lists and maps
+// $custom-colors: null;
+// $custom-shades: null;
+
+// $sizes: $size-1 $size-2 $size-3 $size-4 $size-5 $size-6 $size-7;
+
+//<---Generic variables overrides --->//
+$body-background-color: $grey-lightest;
+// $body-size: 16px;
+// $body-min-width: 300px;
+// $body-rendering: optimizeLegibility;
+// $body-family: $family-primary BlinkMacSystemFont, -apple-system, 'Segoe UI',
+//   'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+//   'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+// $body-overflow-x: hidden;
+// $body-overflow-y: scroll;
+// $body-color: $text;
+// $body-font-size: 1em;
+// $body-weight: $weight-normal;
+// $body-line-height: 1.5;
+// $code-family: $family-code;
+// $code-padding: 0.25em 0.5em 0.25em;
+// $code-weight: normal;
+// $code-size: 0.875em;
+// $small-font-size: 0.875em;
+// $hr-background-color: $background;
+// $hr-height: 2px;
+// $hr-margin: 1.5rem 0;
+// $strong-color: $text-strong;
+// $strong-weight: $weight-bold;
+// $pre-font-size: 0.875em;
+// $pre-padding: 1.25rem 1.5rem;
+// $pre-code-font-size: 1em;
+
+// Import all styles for now
+@import './mixins/spacing.scss';
+@import '../../node_modules/bulma/bulma.sass';
+@import '../../node_modules/font-awesome/css/font-awesome.min.css';
+
+// Import only what you need from Bulma
+// @import '../../node_modules/bulma/sass/utilities/_all.sass';
+// @import '../../node_modules/bulma/sass/base/_all.sass';
+// @import '../../node_modules/bulma/sass/elements/button.sass';
+// @import '../../node_modules/bulma/sass/elements/container.sass';
+// @import '../node_modules/bulma/sass/elements/form.sass';
+// @import '../../node_modules/bulma/sass/elements/title.sass';
+// @import '../../node_modules/bulma/sass/components/navbar.sass';
+// @import '../../node_modules/bulma/sass/layout/hero.sass';
+// @import '../../node_modules/bulma/sass/layout/section.sass';
