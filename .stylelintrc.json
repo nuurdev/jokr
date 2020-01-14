@@ -1,6 +1,9 @@
 {
   "extends": "stylelint-config-standard",
-  "ignoreFiles": "client/build/*/**",
+  "ignoreFiles": [
+    "client/build",
+    "client/src/**/{*.ts,*.tsx}"
+  ],
   "plugins": [
     "stylelint-no-unused-selectors"
   ],
