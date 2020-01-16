@@ -12,6 +12,8 @@ import Register from '../register';
 import Login from '../login';
 import Home from '../home';
 import ConfirmEmail from '../confirm-email';
+import ForgotPassword from '../forgot-password';
+import ResetPassword from '../reset-password';
 
 interface Props extends DispatchProps, StateProps {}
 
@@ -30,8 +32,6 @@ class App extends React.Component<Props, {}> {
   }
 
   render() {
-    const ForgotPassword = () => <div>Forgot password</div>;
-    const ResetPassword = () => <div>Reset password</div>;
     const NotFound = () => <div>404 not found</div>;
 
     if (this.props.authState.fetchLoading) {
@@ -73,17 +73,31 @@ class App extends React.Component<Props, {}> {
                 <Register />
               )}
             </Route>
+            {/* For now, let's redirect if authenticated */}
+            <Route exact path="/forgot-password">
+              {this.props.authState.isAuthenticated ? (
+                <Redirect to="/" />
+              ) : (
+                <ForgotPassword />
+              )}
+            </Route>
+            {/* For now, let's redirect if authenticated */}
+            <Route
+              exact
+              path="/reset-password/:token"
+              render={({ match }) =>
+                !this.props.authState.isAuthenticated ? (
+                  <ResetPassword match={match} />
+                ) : (
+                  <Redirect to="/" />
+                )
+              }
+            />
             <PrivateRoute
               exact
               authState={this.props.authState}
               path={['/', '/account']}
               component={Home}
-            />
-            <Route exact path="/forgot-password" component={ForgotPassword} />
-            <Route
-              exact
-              path="/reset-password/:token"
-              component={ResetPassword}
             />
             <Route
               exact

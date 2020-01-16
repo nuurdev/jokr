@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable react/destructuring-assignment */
@@ -5,6 +6,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import { Container } from 'bloomer';
+import { Link } from 'react-router-dom';
 
 interface Props {
   match: any;
@@ -49,6 +51,7 @@ class ConfirmEmail extends Component<Props, State> {
           {this.state.confirmed
             ? 'Your email is confirmed!'
             : 'Oops invalid token'}
+          <Link to="/">Back to application</Link>
         </Container>
       </div>
     );
