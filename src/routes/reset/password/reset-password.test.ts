@@ -60,7 +60,7 @@ describe('/api/user/reset-password', () => {
 
     const userWithToken = await User.findOne({
       email: savedUser.email
-    });
+    }).select('+resetPasswordToken');
     const token = userWithToken.resetPasswordToken;
 
     await request(app)
@@ -95,7 +95,7 @@ describe('/api/user/reset-password', () => {
 
     const userWithToken = await User.findOne({
       email: savedUser.email
-    });
+    }).select('+resetPasswordToken');
     const token = userWithToken.resetPasswordToken;
 
     await request(app)
@@ -128,7 +128,7 @@ describe('/api/user/reset-password', () => {
 
     const updatedUser = await User.findOne({
       email: savedUser.email
-    });
+    }).select('+resetPasswordToken');
     const token = updatedUser.resetPasswordToken;
 
     await request(app)
@@ -157,7 +157,7 @@ describe('/api/user/reset-password', () => {
 
     const updatedUser = await User.findOne({
       email: savedUser.email
-    });
+    }).select('+resetPasswordToken');
 
     const token = updatedUser.resetPasswordToken;
 

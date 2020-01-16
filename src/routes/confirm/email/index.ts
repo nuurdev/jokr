@@ -68,31 +68,32 @@ router.post('/confirmation-email', verify, async (req, res) => {
 });
 
 // Confirm email validate
-router.post('/confirm-email', verify, async (req, res) => {
-  const { _id } = req.body.user;
+router.post('/confirm-email', async (req, res) => {
   const { token } = req.body;
 
   const foundUser = await User.findOne({
-    _id: _id,
     confirmEmailToken: token
+  }).select('+confirmEmailToken +confirmEmailExpires');
+
+  if (!foundUser) {
+    console.log('User not found');
+    return res.status(400).send({ message: 'User not found' });
+  }
+
+  const isNotExpired =
+    new Date(`${foundUser.confirmEmailExpires}`) > new Date();
+
+  if (!isNotExpired) {
+    return res.status(400).send({ message: 'Token expired' });
+  }
+
+  await foundUser.updateOne({
+    confirmed: true,
+    confirmEmailToken: null,
+    confirmEmailExpires: null
   });
 
-  const isValid =
-    foundUser && new Date(`${foundUser.confirmEmailExpires}`) > new Date();
-
-  if (isValid) {
-    await User.findOneAndUpdate(
-      { _id },
-      {
-        confirmed: true,
-        confirmEmailToken: null,
-        confirmEmailExpires: null
-      },
-      { new: true }
-    );
-    return res.status(200).send({ message: 'Email confirmed' });
-  }
-  return res.status(400).send({ message: 'Invalid token' });
+  return res.status(200).send({ message: 'Email confirmed' });
 });
 
 export default router;

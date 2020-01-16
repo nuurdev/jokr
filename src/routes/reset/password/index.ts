@@ -76,7 +76,7 @@ router.get('/reset-password', async (req, res) => {
   const { token } = req.query;
   const foundUser = await User.findOne({
     resetPasswordToken: token
-  });
+  }).select('+resetPasswordToken +resetPasswordExpires');
 
   const isValid =
     foundUser && new Date(`${foundUser.resetPasswordExpires}`) > new Date();
@@ -99,7 +99,7 @@ router.post('/reset-password', async (req, res) => {
 
   const foundUser = await User.findOne({
     resetPasswordToken: token
-  });
+  }).select('+resetPasswordToken +resetPasswordExpires');
 
   const isValid =
     foundUser && new Date(`${foundUser.resetPasswordExpires}`) > new Date();
