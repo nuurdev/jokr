@@ -82,6 +82,7 @@ class Login extends Component<Props, State> {
                         placeholder="Password"
                         onChange={this.handleChange}
                       />
+                      <Link to="/forgot-password">Forgot password?</Link>
                     </Control>
                   </Field>
                   <Button
