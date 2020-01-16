@@ -16,7 +16,9 @@ router.post('/login', async (req, res) => {
       .status(400)
       .send({ message: "Sorry, that email or password didn't work" });
   // Check if email exists
-  const user = await User.findOne({ username: req.body.username });
+  const user = await User.findOne({ username: req.body.username }).select(
+    '+password'
+  );
   if (!user)
     return res
       .status(400)

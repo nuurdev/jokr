@@ -60,7 +60,7 @@ describe('/api/user/confirm-email', () => {
 
     const user = await User.findOne({
       email: registerReq.email
-    });
+    }).select('+confirmEmailToken');
 
     const { confirmEmailToken } = user;
 
@@ -72,7 +72,7 @@ describe('/api/user/confirm-email', () => {
 
     const updatedUser = await User.findOne({
       email: registerReq.email
-    });
+    }).select('+confirmEmailToken +confirmEmailExpires');
 
     expect(updatedUser.confirmed).toEqual(true);
     expect(updatedUser.confirmEmailToken).toEqual(null);

@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     max: 255
   },
   password: {
+    select: false,
     type: String,
     max: 1024,
     min: 8
@@ -32,15 +33,19 @@ const userSchema = new mongoose.Schema({
     default: false
   },
   resetPasswordToken: {
+    select: false,
     type: String
   },
   resetPasswordExpires: {
+    select: false,
     type: Date
   },
   confirmEmailToken: {
+    select: false,
     type: String
   },
   confirmEmailExpires: {
+    select: false,
     type: Date
   },
   date: {
