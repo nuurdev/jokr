@@ -6,6 +6,7 @@ interface Props extends RouteProps {
   // Remove any
   component: React.FC<any>;
   authState: AuthState;
+  exact: boolean;
 }
 
 const PrivateRoute = ({ component: Component, authState, ...rest }: Props) => {
