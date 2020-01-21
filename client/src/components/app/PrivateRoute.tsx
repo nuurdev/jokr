@@ -6,14 +6,13 @@ interface Props extends RouteProps {
   // Remove any
   component: React.FC<any>;
   authState: AuthState;
-  exact: boolean;
 }
 
 const PrivateRoute = ({ component: Component, authState, ...rest }: Props) => {
   return (
     <Route
       {...rest}
-      render={props =>
+      render={(props: any) =>
         authState.isAuthenticated ? (
           <Component currentUser={authState.currentUser} {...props} />
         ) : (
