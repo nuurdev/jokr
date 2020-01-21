@@ -44,6 +44,10 @@
       "consistent"
     ],
     // React rules
+    "react/jsx-curly-newline": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/destructuring-assignment": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
     "react/jsx-filename-extension": [
       2,
       {

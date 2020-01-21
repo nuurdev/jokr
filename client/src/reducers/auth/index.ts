@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable no-console */
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
+import { Dispatch } from 'redux';
 import { PENDING, FULFILLED, REJECTED } from '../action-types';
 
 const LOGIN_USER = 'LOGIN_USER';
@@ -38,56 +37,75 @@ const initialState = {
 
 export type AuthState = Readonly<typeof initialState>;
 
-export const loginUser = (userObject: LoginRequest) => dispatch =>
-  dispatch({
-    type: LOGIN_USER,
-    payload: axios.post('/api/user/login/', userObject)
-  })
-    .then(res => {
-      const { token, user } = res.value.data;
-      const { username } = user;
-      localStorage.setItem('token', token);
-      console.log(username);
-      // Show notification in UI
-    })
-    .catch(error => {
-      console.log(error);
-      // Show error in the UI
+export const loginUser = (userObject: LoginRequest) => async (
+  dispatch: Dispatch
+): Promise<AxiosResponse> => {
+  dispatch({ type: PENDING(LOGIN_USER) });
+  try {
+    const res = await axios.post('/api/user/login/', userObject);
+    localStorage.setItem('token', res.data.token);
+    dispatch({ type: FULFILLED(LOGIN_USER), payload: res.data.user });
+    return res;
+  } catch (err) {
+    dispatch({
+      type: REJECTED(LOGIN_USER),
+      payload: err.response.data.message
     });
+    if (err.response) {
+      return err.response;
+    }
+    return err;
+  }
+};
 
-export const registerUser = (userObject: RegisterRequest) => dispatch =>
-  dispatch({
-    type: REGISTER_USER,
-    payload: axios.post('/api/user/register/', userObject)
-  })
-    .then(res => {
-      const { token, user } = res.value.data;
-      const { username } = user;
-      localStorage.setItem('token', token);
-      console.log(username);
-      // Show notification in UI
-    })
-    .catch(error => {
-      console.log(error);
-      // Show error in the UI
+export const registerUser = (userObject: RegisterRequest) => async (
+  dispatch: Dispatch
+): Promise<AxiosResponse> => {
+  dispatch({ type: PENDING(REGISTER_USER) });
+  try {
+    const res = await axios.post('/api/user/register/', userObject);
+    localStorage.setItem('token', res.data.token);
+    dispatch({ type: FULFILLED(REGISTER_USER), payload: res.data.user });
+    // Dispatch action to show error in UI
+    return res;
+  } catch (err) {
+    dispatch({
+      type: REJECTED(REGISTER_USER),
+      payload: err.response.data.message
     });
+    if (err.response) {
+      return err.response;
+    }
+    return err;
+  }
+};
 
-export const fetchUser = () => dispatch =>
-  dispatch({
-    type: FETCH_USER,
-    payload: axios.get('/api/user/profile/')
-  })
-    .then(res => console.log(res))
-    .catch(err => console.log(err));
+export const fetchUser = () => async (
+  dispatch: Dispatch
+): Promise<AxiosResponse> => {
+  dispatch({ type: PENDING(FETCH_USER) });
+  try {
+    const res = await axios.get('/api/user/profile/');
+    dispatch({ type: FULFILLED(FETCH_USER), payload: res.data.user });
+    return res;
+  } catch (err) {
+    dispatch({
+      type: REJECTED(FETCH_USER),
+      payload: err.response.data.message
+    });
+    if (err.response) {
+      return err.response;
+    }
+    return err;
+  }
+};
 
-export const logoutUser = () => dispatch => {
-  dispatch({
-    type: LOGOUT_USER
-  });
+export const logoutUser = () => (dispatch: Dispatch): void => {
+  dispatch({ type: LOGOUT_USER });
   localStorage.removeItem('token');
 };
 
-export const authState = (state = initialState, action) => {
+export const authState = (state = initialState, action): AuthState => {
   switch (action.type) {
     // Login cases
     case PENDING(LOGIN_USER):
@@ -95,7 +113,7 @@ export const authState = (state = initialState, action) => {
     case FULFILLED(LOGIN_USER):
       return {
         ...state,
-        currentUser: { ...action.payload.data.user },
+        currentUser: { ...action.payload },
         isAuthenticated: true,
         loginLoading: false
       };
@@ -104,7 +122,7 @@ export const authState = (state = initialState, action) => {
         ...initialState,
         loginLoading: false,
         fetchLoading: false,
-        errorMessage: action.payload.response.data.message
+        errorMessage: action.payload
       };
 
     // Register cases
@@ -113,7 +131,7 @@ export const authState = (state = initialState, action) => {
     case FULFILLED(REGISTER_USER):
       return {
         ...state,
-        currentUser: { ...action.payload.data.user },
+        currentUser: { ...action.payload },
         isAuthenticated: true,
         registerLoading: false
       };
@@ -122,7 +140,7 @@ export const authState = (state = initialState, action) => {
         ...initialState,
         registerLoading: false,
         fetchLoading: false,
-        errorMessage: action.payload.response.data.message
+        errorMessage: action.payload
       };
 
     // Fetch cases
@@ -131,7 +149,7 @@ export const authState = (state = initialState, action) => {
     case FULFILLED(FETCH_USER):
       return {
         ...state,
-        currentUser: { ...action.payload.data.user },
+        currentUser: { ...action.payload },
         isAuthenticated: true,
         fetchLoading: false
       };
@@ -140,7 +158,7 @@ export const authState = (state = initialState, action) => {
 
     // Logout case
     case LOGOUT_USER:
-      return { ...initialState };
+      return { ...initialState, fetchLoading: false };
     default:
       return { ...state };
   }
