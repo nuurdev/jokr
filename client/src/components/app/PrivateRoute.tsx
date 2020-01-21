@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import { Route, Redirect, RouteProps } from 'react-router-dom';
 import { AuthState } from '../../reducers/auth';
@@ -7,7 +6,7 @@ interface PrivateRouteProps extends RouteProps {
   authState: AuthState;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({
+const PrivateRoute: React.FC<any> = ({
   component: Component,
   authState,
   ...rest
