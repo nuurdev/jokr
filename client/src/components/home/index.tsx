@@ -2,10 +2,10 @@ import React from 'react';
 import { Container, Button } from 'bloomer';
 import { Switch, Route, RouteProps } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { logoutUser, AuthState } from '../../reducers/auth';
+import { logoutUser, User } from '../../reducers/auth';
 
 interface Props extends RouteProps {
-  authState: AuthState;
+  currentUser: User;
 }
 
 const Account = () => <div>Account page</div>;
@@ -16,7 +16,7 @@ const Home: React.FC<Props> = (props: Props) => {
 
   return (
     <Container>
-      <div>{props.authState.currentUser.username}</div>
+      <div>{props.currentUser.username}</div>
       <Button
         type="submit"
         isColor="dark"
