@@ -1,0 +1,21 @@
+/* stylelint-disable declaration-no-important */
+
+.notification {
+  &.is-light.is-danger {
+    background: rgba($red, 0.08) !important;
+    color: $dark-red !important;
+  }
+
+  &.is-light.is-success {
+    background: rgba($green, 0.12) !important;
+    color: $green !important;
+  }
+
+  &.is-small {
+    padding: 0.75rem 2rem 0.75rem 1rem !important;
+
+    .delete {
+      top: auto !important;
+    }
+  }
+}

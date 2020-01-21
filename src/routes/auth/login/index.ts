@@ -12,23 +12,17 @@ router.post('/login', async (req, res) => {
   // could put this in try catch block
   const { error } = loginValidation(req.body);
   if (error)
-    return res
-      .status(400)
-      .send({ message: "Sorry, that email or password didn't work" });
+    return res.status(400).send({ message: 'Incorrect username or password.' });
   // Check if email exists
   const user = await User.findOne({ username: req.body.username }).select(
     '+password'
   );
   if (!user)
-    return res
-      .status(400)
-      .send({ message: "Sorry, that email or password didn't work. no user" });
+    return res.status(400).send({ message: 'Incorrect username or password.' });
   // Check if password is correct
   const validPass = await bcrypt.compare(req.body.password, user.password);
   if (!validPass)
-    return res
-      .status(400)
-      .send({ message: "Sorry, that email or password didn't work." });
+    return res.status(400).send({ message: 'Incorrect username or password.' });
   // Create and assign a token
   const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
   return res.header('auth-token', token).send({ user, token });
