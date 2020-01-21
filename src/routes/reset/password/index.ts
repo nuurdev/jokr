@@ -117,9 +117,9 @@ router.post('/reset-password', async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).send('Password updated successfully');
+    res.status(200).send({ message: 'Password updated successfully' });
   } else {
-    res.status(400).send('Unable to update your password');
+    res.status(400).send({ message: 'Token no longer valid' });
   }
 });
 export default router;
