@@ -1,16 +1,7 @@
 import React from 'react';
-import { Route, Redirect, RouteProps } from 'react-router-dom';
-import { AuthState } from '../../reducers/auth';
+import { Route, Redirect } from 'react-router-dom';
 
-interface PrivateRouteProps extends RouteProps {
-  authState: AuthState;
-}
-
-const PrivateRoute: React.FC<any> = ({
-  component: Component,
-  authState,
-  ...rest
-}) => {
+const PrivateRoute = ({ component: Component, authState, ...rest }) => {
   return (
     <Route
       {...rest}
