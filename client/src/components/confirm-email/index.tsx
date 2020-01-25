@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Container, Hero, HeroBody, Title, Box } from 'bloomer';
+import { Container, Hero, HeroBody, Title } from 'bloomer';
 import { Link, useParams } from 'react-router-dom';
 
 const ConfirmEmail: React.FC = () => {
@@ -21,7 +21,7 @@ const ConfirmEmail: React.FC = () => {
   }, [token]);
 
   if (confirmLoading) {
-    return <p data-testid="loading">Verifying token...</p>;
+    return <div data-testid="verifying-email-token" />;
   }
 
   return (
@@ -29,24 +29,29 @@ const ConfirmEmail: React.FC = () => {
       <HeroBody>
         <Container hasTextAlign="centered">
           {confirmed ? (
-            <Box>
+            <div>
               <Title isSize={1}>Good news!</Title>
               <Title isSize={2} hasTextColor="grey">
                 Your email has been confirmed
               </Title>
               <Link to="/">Back to application</Link>
-            </Box>
+            </div>
           ) : (
-            <Box>
-              <Title isSize={1}>Oh no!</Title>
-              <Title isSize={2} hasTextColor="grey">
-                That token did not work
-                <span role="img" aria-label="anguish">
+            <div>
+              <Title isSize={2}>
+                That link did not work
+                <span className="ml-2" role="img" aria-label="anguish">
                   😧
                 </span>
               </Title>
+              <Title isSize={4} hasTextColor="grey">
+                Sorry, your email authentication link is expired or invalid.
+              </Title>
+              {/* <Link to="/confirm-email" className="mr-3">
+                Request new link
+              </Link> */}
               <Link to="/">Back to application</Link>
-            </Box>
+            </div>
           )}
         </Container>
       </HeroBody>

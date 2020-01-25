@@ -51,10 +51,7 @@ export const loginUser = (userObject: LoginRequest) => async (
       type: REJECTED(LOGIN_USER),
       payload: err.response.data.message
     });
-    if (err.response) {
-      return err.response;
-    }
-    return err;
+    throw new Error(err.response.data.message);
   }
 };
 
@@ -66,17 +63,13 @@ export const registerUser = (userObject: RegisterRequest) => async (
     const res = await axios.post('/api/user/register/', userObject);
     localStorage.setItem('token', res.data.token);
     dispatch({ type: FULFILLED(REGISTER_USER), payload: res.data.user });
-    // Dispatch action to show error in UI
     return res;
   } catch (err) {
     dispatch({
       type: REJECTED(REGISTER_USER),
       payload: err.response.data.message
     });
-    if (err.response) {
-      return err.response;
-    }
-    return err;
+    throw new Error(err.response.data.message);
   }
 };
 
@@ -93,9 +86,6 @@ export const fetchUser = () => async (
       type: REJECTED(FETCH_USER),
       payload: err.response.data.message
     });
-    if (err.response) {
-      return err.response;
-    }
     return err;
   }
 };

@@ -25,9 +25,7 @@ const App: React.FC = () => {
     dispatch(fetchUser());
   }, [dispatch]);
 
-  if (authState.fetchLoading) {
-    return <p data-testid="loading">Loading...</p>;
-  }
+  if (authState.fetchLoading) return <div data-testid="fetching-user" />;
 
   return (
     <Container>
@@ -39,25 +37,11 @@ const App: React.FC = () => {
           <Route exact path="/register">
             {authState.isAuthenticated ? <Redirect to="/" /> : <Register />}
           </Route>
-          {/* For now, let's redirect if authenticated */}
-          <Route exact path="/forgot-password">
-            {authState.isAuthenticated ? (
-              <Redirect to="/" />
-            ) : (
-              <ForgotPassword />
-            )}
-          </Route>
-          {/* For now, let's redirect if authenticated */}
+          <Route exact path="/forgot-password" component={ForgotPassword} />
           <Route
             exact
             path="/reset-password/:token"
-            render={() =>
-              !authState.isAuthenticated ? (
-                <ResetPassword />
-              ) : (
-                <Redirect to="/" />
-              )
-            }
+            component={ResetPassword}
           />
           <PrivateRoute
             exact
