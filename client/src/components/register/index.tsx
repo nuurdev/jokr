@@ -45,25 +45,16 @@ const Register: React.FC = () => {
               initialStatus={{ error: '' }}
               onSubmit={async (data, { setSubmitting, setStatus }) => {
                 setSubmitting(true);
-                const res = await dispatch(registerUser({ ...data }));
-                // setSubmitting(false) react memory leak error
-                // Error not being catched hence this approach
-                if (res.data.message) {
-                  setStatus({ error: res.data.message });
-                }
-                // Should handle this globally
-                if (res.status === 500) {
-                  setStatus({ error: 'Internal server error' });
-                }
+                dispatch(registerUser({ ...data })).catch(err => {
+                  setSubmitting(false);
+                  setStatus({ error: err.message });
+                });
               }}
             >
               {({ isSubmitting, errors, touched, setStatus, status }) => (
                 <Form>
                   {status.error ? (
-                    <Notification
-                      isColor="danger"
-                      className="notification is-light is-small"
-                    >
+                    <Notification className="is-danger is-light is-small">
                       <Delete onClick={() => setStatus({ error: '' })} />
                       {status.error}
                     </Notification>

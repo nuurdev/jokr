@@ -11,18 +11,24 @@ import {
   Content,
   Notification,
   Delete,
-  Title
+  Title,
+  HeroBody,
+  Hero
 } from 'bloomer';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 import resetPasswordSchema from './validation';
 import logo from '../../assets/logo.svg';
+import { logoutUser } from '../../reducers/auth';
 
 const ResetPassword: React.FC = () => {
   const [verifyingToken, setVerifyingToken] = useState(true);
   const [validToken, setValidToken] = useState(false);
   const { token } = useParams();
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    dispatch(logoutUser());
     axios
       .get('/api/user/reset-password', { params: { token } })
       .then(() => {
@@ -32,10 +38,10 @@ const ResetPassword: React.FC = () => {
       .catch(() => {
         setVerifyingToken(false);
       });
-  }, [token]);
+  }, [dispatch, token]);
 
   if (verifyingToken) {
-    return <p data-testid="loading">Verifying token...</p>;
+    return <div data-testid="verifying-password-token" />;
   }
 
   return (
@@ -79,19 +85,13 @@ const ResetPassword: React.FC = () => {
                 {({ isSubmitting, errors, touched, setStatus, status }) => (
                   <Form>
                     {status.error ? (
-                      <Notification
-                        // isColor="danger"
-                        className="notification is-danger is-light is-small"
-                      >
+                      <Notification className="is-danger is-light is-small">
                         <Delete onClick={() => setStatus({ error: '' })} />
                         {status.error}
                       </Notification>
                     ) : null}
                     {status.success ? (
-                      <Notification
-                        // isColor="success"
-                        className="notification is-success is-light is-small"
-                      >
+                      <Notification className="is-success is-light is-small">
                         <Delete onClick={() => setStatus({ success: '' })} />
                         {status.success}
                       </Notification>
@@ -140,19 +140,27 @@ const ResetPassword: React.FC = () => {
           </Column>
         </Columns>
       ) : (
-        <Box className="mt-5" style={{ maxWidth: 600, margin: '0 auto' }}>
-          <Title isSize={1}>Oh no!</Title>
-          <Title isSize={2} hasTextColor="grey">
-            That token did not work
-            <span role="img" aria-label="anguish">
-              😧
-            </span>
-          </Title>
-          <Link to="/forgot-password" className="mr-2">
-            Try again
-          </Link>
-          <Link to="/">Back to applicaton</Link>
-        </Box>
+        <Hero isFullHeight>
+          <HeroBody>
+            <Container hasTextAlign="centered">
+              <div>
+                <Title isSize={2}>
+                  That link did not work
+                  <span className="ml-2" role="img" aria-label="anguish">
+                    😧
+                  </span>
+                </Title>
+                <Title isSize={4} hasTextColor="grey">
+                  Sorry, your password reset link is expired or invalid.
+                </Title>
+                <Link to="/forgot-password" className="mr-3">
+                  Request new link
+                </Link>
+                <Link to="/">Back to application</Link>
+              </div>
+            </Container>
+          </HeroBody>
+        </Hero>
       )}
     </Container>
   );
