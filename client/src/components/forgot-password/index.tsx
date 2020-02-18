@@ -15,9 +15,9 @@ import {
 } from 'bloomer';
 import axios from 'axios';
 import forgotPasswordSchema from './validation';
-
 import logo from '../../assets/logo.svg';
 import { logoutUser } from '../../reducers/auth';
+import { getClassName, getDataTestId } from '../../utils/get-attributes';
 
 const ForgotPassword: React.FC = () => {
   const dispatch = useDispatch();
@@ -41,21 +41,20 @@ const ForgotPassword: React.FC = () => {
             validationSchema={forgotPasswordSchema}
             validateOnBlur={false}
             validateOnChange={false}
-            initialStatus={{ error: '', success: '' }}
+            initialStatus={{ message: '', status: '' }}
             onSubmit={(data, { setSubmitting, setStatus }) => {
               setSubmitting(true);
-
               return axios
                 .post('/api/user/forgot-password/', { ...data })
-                .then(() => {
-                  // Could use message from server
-                  setStatus({ success: 'Reset password link sent' });
+                .then(res => {
+                  const { status } = res;
+                  const { message } = res.data;
+                  setStatus({ message, status });
                 })
                 .catch(err => {
                   const { message } = err.response.data;
-                  return message
-                    ? setStatus({ error: message })
-                    : setStatus({ error: 'Something went wrong' });
+                  const { status } = err.response;
+                  setStatus({ message, status });
                 });
             }}
           >
@@ -63,16 +62,16 @@ const ForgotPassword: React.FC = () => {
               <Box>
                 <Content>
                   <h6 className="has-text-centered pt-1">Forgot password</h6>
-                  {status.error ? (
-                    <Notification className="is-danger is-light is-small">
-                      <Delete onClick={() => setStatus({ error: '' })} />
-                      {status.error}
-                    </Notification>
-                  ) : null}
-                  {status.success ? (
-                    <Notification className="is-success is-light is-small">
-                      <Delete onClick={() => setStatus({ success: '' })} />
-                      {status.success}
+                  {status.message ? (
+                    <Notification
+                      data-testid={getDataTestId(status.status)}
+                      className={getClassName(status.status)}
+                      role="alert"
+                    >
+                      <Delete
+                        onClick={() => setStatus({ message: '', status: '' })}
+                      />
+                      {status.message}
                     </Notification>
                   ) : null}
                   <p>

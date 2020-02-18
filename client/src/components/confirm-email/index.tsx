@@ -10,7 +10,7 @@ const ConfirmEmail: React.FC = () => {
 
   useEffect(() => {
     axios
-      .post('/api/user/confirm-email', { token })
+      .post('/api/user/confirm-email/', { token })
       .then(() => {
         setConfirmed(true);
         setConfirmLoading(false);
@@ -29,7 +29,7 @@ const ConfirmEmail: React.FC = () => {
       <HeroBody>
         <Container hasTextAlign="centered">
           {confirmed ? (
-            <div>
+            <div data-testid="email-confirm-valid">
               <Title isSize={1}>Good news!</Title>
               <Title isSize={2} hasTextColor="grey">
                 Your email has been confirmed
@@ -37,7 +37,7 @@ const ConfirmEmail: React.FC = () => {
               <Link to="/">Back to application</Link>
             </div>
           ) : (
-            <div>
+            <div data-testid="email-confirm-invalid">
               <Title isSize={2}>
                 That link did not work
                 <span className="ml-2" role="img" aria-label="anguish">

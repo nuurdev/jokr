@@ -42,21 +42,25 @@ const Register: React.FC = () => {
               validationSchema={registerSchema}
               validateOnBlur={false}
               validateOnChange={false}
-              initialStatus={{ error: '' }}
-              onSubmit={async (data, { setSubmitting, setStatus }) => {
+              initialStatus={{ message: '' }}
+              onSubmit={(data, { setSubmitting, setStatus }) => {
                 setSubmitting(true);
                 dispatch(registerUser({ ...data })).catch(err => {
                   setSubmitting(false);
-                  setStatus({ error: err.message });
+                  const { message } = err;
+                  setStatus({ message });
                 });
               }}
             >
               {({ isSubmitting, errors, touched, setStatus, status }) => (
                 <Form>
-                  {status.error ? (
-                    <Notification className="is-danger is-light is-small">
-                      <Delete onClick={() => setStatus({ error: '' })} />
-                      {status.error}
+                  {status.message ? (
+                    <Notification
+                      data-testid="error-notification"
+                      className="is-danger is-light is-small"
+                    >
+                      <Delete onClick={() => setStatus({ message: '' })} />
+                      {status.message}
                     </Notification>
                   ) : null}
                   {errors.username && touched.username ? (

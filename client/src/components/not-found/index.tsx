@@ -4,7 +4,7 @@ import { Hero } from 'bloomer/lib/layout/Hero/Hero';
 import { Link } from 'react-router-dom';
 
 const NotFound: React.FC = () => (
-  <Hero isFullHeight>
+  <Hero isFullHeight data-testid="not-found">
     <HeroBody>
       <Container hasTextAlign="centered">
         <Title isSize={2}>

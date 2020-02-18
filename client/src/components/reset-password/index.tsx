@@ -20,6 +20,7 @@ import { useDispatch } from 'react-redux';
 import resetPasswordSchema from './validation';
 import logo from '../../assets/logo.svg';
 import { logoutUser } from '../../reducers/auth';
+import { getDataTestId, getClassName } from '../../utils/get-attributes';
 
 const ResetPassword: React.FC = () => {
   const [verifyingToken, setVerifyingToken] = useState(true);
@@ -47,7 +48,7 @@ const ResetPassword: React.FC = () => {
   return (
     <Container className="resetpassword-container">
       {validToken ? (
-        <Columns isCentered className="mt-5">
+        <Columns isCentered className="mt-5" data-testid="reset-password-valid">
           <Column
             isSize={{ mobile: 12, desktop: 4 }}
             style={{ maxWidth: 360, margin: '0 auto' }}
@@ -64,36 +65,40 @@ const ResetPassword: React.FC = () => {
                 validationSchema={resetPasswordSchema}
                 validateOnBlur={false}
                 validateOnChange={false}
-                initialStatus={{ error: '', success: '' }}
-                onSubmit={async (data, { setSubmitting, setStatus }) => {
+                initialStatus={{ message: '', status: '' }}
+                onSubmit={async (
+                  data,
+                  { setSubmitting, setStatus, resetForm }
+                ) => {
                   setSubmitting(true);
-
                   return axios
                     .post('/api/user/reset-password/', { ...data, token })
-                    .then(() => {
-                      // Could use message from server
-                      setStatus({ success: 'Password updated successfully' });
+                    .then(res => {
+                      const { status } = res;
+                      const { message } = res.data;
+                      resetForm();
+                      setStatus({ message, status });
                     })
                     .catch(err => {
                       const { message } = err.response.data;
-                      return message
-                        ? setStatus({ error: message })
-                        : setStatus({ error: 'Something went wrong' });
+                      const { status } = err.response;
+                      resetForm();
+                      setStatus({ message, status });
                     });
                 }}
               >
                 {({ isSubmitting, errors, touched, setStatus, status }) => (
                   <Form>
-                    {status.error ? (
-                      <Notification className="is-danger is-light is-small">
-                        <Delete onClick={() => setStatus({ error: '' })} />
-                        {status.error}
-                      </Notification>
-                    ) : null}
-                    {status.success ? (
-                      <Notification className="is-success is-light is-small">
-                        <Delete onClick={() => setStatus({ success: '' })} />
-                        {status.success}
+                    {status.message ? (
+                      <Notification
+                        data-testid={getDataTestId(status.status)}
+                        className={getClassName(status.status)}
+                        role="alert"
+                      >
+                        <Delete
+                          onClick={() => setStatus({ message: '', status: '' })}
+                        />
+                        {status.message}
                       </Notification>
                     ) : null}
                     {errors.newPassword && touched.newPassword ? (
@@ -140,7 +145,7 @@ const ResetPassword: React.FC = () => {
           </Column>
         </Columns>
       ) : (
-        <Hero isFullHeight>
+        <Hero isFullHeight data-testid="reset-password-invalid">
           <HeroBody>
             <Container hasTextAlign="centered">
               <div>

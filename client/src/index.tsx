@@ -10,7 +10,7 @@ import thunkMiddleware from 'redux-thunk';
 import promiseMiddleware from 'redux-promise-middleware';
 import * as serviceWorker from './serviceWorker';
 import initStore from './store';
-import App from './components/app/App';
+import App from './components/app';
 
 axios.interceptors.request.use(
   config => {

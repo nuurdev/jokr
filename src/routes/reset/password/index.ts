@@ -56,18 +56,14 @@ router.post('/forgot-password', async (req, res) => {
 
     transporter
       .sendMail(mailOptions)
-      .then(() =>
-        res
-          .status(200)
-          .send({ message: 'If email exists, recovery email sent' })
-      )
+      .then(() => res.status(200).send({ message: 'Reset password link sent' }))
       .catch(err => {
         // We could remove the users reset token here
         res.status(400).send({ message: 'Oops, unable to send email' });
         console.log(err);
       });
   } else {
-    res.status(200).send({ message: 'If email exists, recovery email sent' });
+    res.status(200).send({ message: 'Reset password link sent' });
   }
 });
 
