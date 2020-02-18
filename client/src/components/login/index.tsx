@@ -23,7 +23,7 @@ import loginSchema from './validation';
 const Login: React.FC = () => {
   const dispatch: ThunkDispatch<RootState, null, Action> = useDispatch();
   return (
-    <Container className="login-container">
+    <Container className="login-container" data-testid="login">
       <Columns isCentered className="mt-5">
         <Column
           isSize={{ mobile: 12, desktop: 4 }}
@@ -41,21 +41,25 @@ const Login: React.FC = () => {
               validationSchema={loginSchema}
               validateOnBlur={false}
               validateOnChange={false}
-              initialStatus={{ error: '' }}
+              initialStatus={{ message: '' }}
               onSubmit={(data, { setSubmitting, setStatus }) => {
                 setSubmitting(true);
                 dispatch(loginUser({ ...data })).catch(err => {
                   setSubmitting(false);
-                  setStatus({ error: err.message });
+                  const { message } = err;
+                  setStatus({ message });
                 });
               }}
             >
               {({ isSubmitting, errors, touched, setStatus, status }) => (
                 <Form>
-                  {status.error ? (
-                    <Notification className="is-danger is-light is-small">
-                      <Delete onClick={() => setStatus({ error: '' })} />
-                      {status.error}
+                  {status.message ? (
+                    <Notification
+                      data-testid="error-notification"
+                      className="is-danger is-light is-small"
+                    >
+                      <Delete onClick={() => setStatus({ message: '' })} />
+                      {status.message}
                     </Notification>
                   ) : null}
                   {errors.username && touched.username ? (

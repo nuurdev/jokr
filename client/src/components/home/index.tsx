@@ -15,7 +15,7 @@ const Home: React.FC<Props> = (props: Props) => {
   const dispatch = useDispatch();
 
   return (
-    <Container>
+    <Container data-testid="home">
       <div>{props.currentUser.username}</div>
       <Button
         type="submit"
