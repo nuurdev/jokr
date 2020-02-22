@@ -23,8 +23,8 @@ import { logoutUser } from '../../reducers/auth';
 import { getDataTestId, getClassName } from '../../utils/get-attributes';
 
 const ResetPassword: React.FC = () => {
-  const [verifyingToken, setVerifyingToken] = useState(true);
-  const [validToken, setValidToken] = useState(false);
+  const [verifyingToken, setVerifyingToken] = useState<boolean>(true);
+  const [validToken, setValidToken] = useState<boolean>(false);
   const { token } = useParams();
   const dispatch = useDispatch();
 

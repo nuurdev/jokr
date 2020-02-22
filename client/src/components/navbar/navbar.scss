@@ -1,0 +1,21 @@
+@import '../../../node_modules/bulma/sass/utilities/_all.sass';
+// Don't import all utils
+
+.primary-nav {
+  .logo {
+    width: 20px;
+    margin-right: 8px;
+  }
+
+  .active {
+    @media screen and (min-width: $desktop) {
+      border-bottom: 2px solid #ef233c;
+    }
+  }
+
+  .field.is-grouped .control {
+    @media screen and (max-width: $tablet) {
+      width: 100%;
+    }
+  }
+}

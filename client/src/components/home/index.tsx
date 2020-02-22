@@ -1,34 +1,33 @@
 import React from 'react';
-import { Container, Button } from 'bloomer';
+import { Container, Title, Section } from 'bloomer';
 import { Switch, Route, RouteProps } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { logoutUser, User } from '../../reducers/auth';
+import { User } from '../../reducers/auth';
+import Nav from '../navbar';
 
 interface Props extends RouteProps {
   currentUser: User;
 }
 
-const Account = () => <div>Account page</div>;
-const Feed = () => <div>Feed page</div>;
+const Account = () => <Title isSize={4}>Account page</Title>;
+const Notifications = () => <Title isSize={4}>Notifications</Title>;
+const Feed = () => <Title isSize={4}>Feed page</Title>;
 
-const Home: React.FC<Props> = (props: Props) => {
-  const dispatch = useDispatch();
-
+const Home: React.FC<Props> = () => {
   return (
-    <Container data-testid="home">
-      <div>{props.currentUser.username}</div>
-      <Button
-        type="submit"
-        isColor="dark"
-        onClick={() => dispatch(logoutUser())}
-      >
-        Log out
-      </Button>
-      <Switch>
-        <Route path="/" exact component={Feed} />
-        <Route path="/account" exact component={Account} />
-      </Switch>
-    </Container>
+    <div data-testid="home">
+      <Section className="p-0">
+        <Nav />
+      </Section>
+      <Section className="px-3">
+        <Container>
+          <Switch>
+            <Route path="/" exact component={Feed} />
+            <Route path="/account" exact component={Account} />
+            <Route path="/notifications" exact component={Notifications} />
+          </Switch>
+        </Container>
+      </Section>
+    </div>
   );
 };
 
