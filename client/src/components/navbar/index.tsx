@@ -36,7 +36,7 @@ const Nav: React.FC = () => {
   };
 
   return (
-    <Navbar data-testid="primary-nav" className="primary-nav mb-5">
+    <Navbar data-testid="primary-nav" className="primary-nav">
       <Container>
         <NavbarBrand>
           <NavbarItem>
