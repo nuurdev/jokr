@@ -61,7 +61,7 @@ test('reset password fails', async () => {
     }
   );
 
-  await wait(() => expect(getByTestId(/reset-password-fail/i)));
+  await wait(() => expect(getByTestId(/reset-password-invalid/i)));
   expect(axiosMock.get).toHaveBeenCalledTimes(3);
   expect(axiosMock.get).toHaveBeenCalledWith(url, { params: { token: '234' } });
 });
@@ -81,7 +81,7 @@ test('reset password success displays success message', async () => {
     }
   );
 
-  await wait(() => expect(getByTestId(/reset-password-pass/i)));
+  await wait(() => expect(getByTestId(/reset-password-valid/i)));
 
   const passwordField = getByPlaceholderText('New password');
   const passwordFieldConfirm = getByPlaceholderText('Confirm password');
