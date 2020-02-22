@@ -4,8 +4,8 @@ import { Container, Hero, HeroBody, Title } from 'bloomer';
 import { Link, useParams } from 'react-router-dom';
 
 const ConfirmEmail: React.FC = () => {
-  const [confirmed, setConfirmed] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(true);
+  const [confirmed, setConfirmed] = useState<boolean>(false);
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(true);
   const { token } = useParams();
 
   useEffect(() => {
