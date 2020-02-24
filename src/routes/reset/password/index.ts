@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-console */
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import express from 'express';
@@ -12,27 +10,36 @@ import {
 
 const router = express.Router();
 
-// Forgot password
-router.post('/forgot-password', async (req, res) => {
-  const { error } = forgotPasswordValidation(req.body);
-  if (error) return res.status(400).send({ message: error.details[0].message });
+// Request reset password link
+router.post(
+  '/forgot-password',
+  async (req, res): Promise<void> => {
+    const { error } = forgotPasswordValidation(req.body);
+    if (error) {
+      res.status(400).send({ message: error.details[0].message });
+      return;
+    }
 
-  const token = crypto.randomBytes(20).toString('hex');
-  const expires = Date.now() + 3600000;
+    const token = crypto.randomBytes(20).toString('hex');
+    const expires = Date.now() + 3600000;
 
-  const { email } = req.body;
+    const { email } = req.body;
 
-  const foundUser = await User.findOneAndUpdate(
-    { email },
-    {
-      resetPasswordToken: token,
-      resetPasswordExpires: expires
-    },
-    { new: true }
-  );
+    const foundUser = await User.findOneAndUpdate(
+      { email },
+      {
+        resetPasswordToken: token,
+        resetPasswordExpires: expires
+      },
+      { new: true }
+    );
 
-  // Send email
-  if (foundUser) {
+    if (!foundUser) {
+      console.error('User not found');
+      res.status(400).send({ message: 'No account found with that email' });
+      return;
+    }
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -59,52 +66,66 @@ router.post('/forgot-password', async (req, res) => {
       .then(() => res.status(200).send({ message: 'Reset password link sent' }))
       .catch(err => {
         // We could remove the users reset token here
+        console.error(err);
         res.status(400).send({ message: 'Oops, unable to send email' });
-        console.log(err);
       });
-  } else {
-    res.status(200).send({ message: 'Reset password link sent' });
   }
-});
+);
 
 // Check if token is valid
-router.get('/reset-password', async (req, res) => {
-  const { token } = req.query;
-  const foundUser = await User.findOne({
-    resetPasswordToken: token
-  }).select('+resetPasswordToken +resetPasswordExpires');
+router.get(
+  '/reset-password',
+  async (req, res): Promise<void> => {
+    const { token } = req.query;
 
-  const isValid =
-    foundUser && new Date(`${foundUser.resetPasswordExpires}`) > new Date();
+    const foundUser = await User.findOne({
+      resetPasswordToken: token
+    }).select('+resetPasswordToken +resetPasswordExpires');
 
-  return isValid
-    ? res.status(200).send({ message: 'Valid token' })
-    : res.status(400).send({ message: 'Invalid token' });
-});
+    const isValid =
+      foundUser && new Date(`${foundUser.resetPasswordExpires}`) > new Date();
+
+    if (!isValid) {
+      res.status(400).send({ message: 'Invalid token' });
+      return;
+    }
+
+    res.status(200).send({ message: 'Valid token' });
+  }
+);
 
 // Set new password
-router.post('/reset-password', async (req, res) => {
-  const { error } = resetPasswordValidation(req.body);
-  if (error) return res.status(400).send({ message: error.details[0].message });
+router.post(
+  '/reset-password',
+  async (req, res): Promise<void> => {
+    const { error } = resetPasswordValidation(req.body);
+    if (error) {
+      res.status(400).send({ message: error.details[0].message });
+      return;
+    }
 
-  const { token, newPassword, newPasswordConfirm } = req.body;
+    const { token, newPassword, newPasswordConfirm } = req.body;
+    if (newPassword !== newPasswordConfirm) {
+      res.status(400).send({ message: 'Passwords do not match' });
+      return;
+    }
 
-  if (newPassword !== newPasswordConfirm) {
-    return res.status(400).send({ message: 'Passwords do not match' });
-  }
+    const foundUser = await User.findOne({
+      resetPasswordToken: token
+    }).select('+resetPasswordToken +resetPasswordExpires');
 
-  const foundUser = await User.findOne({
-    resetPasswordToken: token
-  }).select('+resetPasswordToken +resetPasswordExpires');
+    const isValid =
+      foundUser && new Date(`${foundUser.resetPasswordExpires}`) > new Date();
 
-  const isValid =
-    foundUser && new Date(`${foundUser.resetPasswordExpires}`) > new Date();
+    if (!isValid) {
+      res.status(400).send({ message: 'Token no longer valid' });
+      return;
+    }
 
-  if (isValid) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    await User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { email: foundUser.email },
       {
         password: hashedPassword,
@@ -113,9 +134,14 @@ router.post('/reset-password', async (req, res) => {
       },
       { new: true }
     );
+
+    if (!updatedUser) {
+      res.status(400).send({ message: 'Oops, something went wrong' });
+      return;
+    }
+
     res.status(200).send({ message: 'Password updated successfully' });
-  } else {
-    res.status(400).send({ message: 'Token no longer valid' });
   }
-});
+);
+
 export default router;

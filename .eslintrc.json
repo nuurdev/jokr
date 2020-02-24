@@ -37,7 +37,7 @@
       "error",
       "never"
     ],
-    "no-console": "error",
+    "no-console": "warn",
     "no-alert": "error",
     "object-shorthand": [
       2,
