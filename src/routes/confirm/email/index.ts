@@ -7,25 +7,37 @@ import verify from '../../../utils/verify-token';
 
 const router = express.Router();
 
-// Trigger email confirm email
-router.post('/confirmation-email', verify, async (req, res) => {
-  const token = crypto.randomBytes(20).toString('hex');
-  const expires = Date.now() + 3600000;
+router.post(
+  '/confirmation-email',
+  verify,
+  async (req, res): Promise<void> => {
+    const token = crypto.randomBytes(20).toString('hex');
+    const expires = Date.now() + 3600000;
 
-  const { _id } = req.body.user;
+    const { _id } = req.body.user;
+    const user = await User.findOne({ _id });
 
-  const user = await User.findOne({ _id });
+    if (!user) {
+      console.error(`Unable to find user`);
+      res.status(400).send({ message: 'No account found with that email' });
+      return;
+    }
 
-  if (user.confirmed) {
-    return res.status(200).send({ message: 'You are already confirmed' });
-  }
+    if (user.confirmed) {
+      res.status(400).send({ message: 'Email already confirmed' });
+      return;
+    }
 
-  await user.updateOne({
-    confirmEmailToken: token,
-    confirmEmailExpires: expires
-  });
+    const updatedUser = await user.updateOne({
+      confirmEmailToken: token,
+      confirmEmailExpires: expires
+    });
 
-  if (user) {
+    if (!updatedUser) {
+      res.status(400).send({ message: 'Oops something went wrong' });
+      return;
+    }
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -47,53 +59,52 @@ router.post('/confirmation-email', verify, async (req, res) => {
         'If you did not request this, please ignore.\n'
     };
 
-    return transporter
+    transporter
       .sendMail(mailOptions)
-      .then(() =>
-        res
-          .status(200)
-          .send({ message: 'Confirmation email sent, if email exists' })
-      )
+      .then(() => res.status(200).send({ message: 'Confirmation email sent' }))
       .catch(err => {
         // We could remove the users reset token here
         console.error(`Unable to send email: ${err}`);
-        return res.status(400).send({ message: 'Oops, unable to send email' });
+        res.status(400).send({ message: 'Oops, unable to send email' });
       });
   }
+);
 
-  console.error(`Unable to find user`);
-  return res
-    .status(200)
-    .send({ message: 'Confirmation email sent, if email exists' });
-});
+router.post(
+  '/confirm-email',
+  async (req, res): Promise<void> => {
+    const { token } = req.body;
 
-// Confirm email validate
-router.post('/confirm-email', async (req, res) => {
-  const { token } = req.body;
+    const foundUser = await User.findOne({
+      confirmEmailToken: token
+    }).select('+confirmEmailToken +confirmEmailExpires');
 
-  const foundUser = await User.findOne({
-    confirmEmailToken: token
-  }).select('+confirmEmailToken +confirmEmailExpires');
+    if (!foundUser) {
+      console.error('User not found');
+      res.status(400).send({ message: 'User not found' });
+      return;
+    }
 
-  if (!foundUser) {
-    console.log('User not found');
-    return res.status(400).send({ message: 'User not found' });
+    const isExpired = new Date(`${foundUser.confirmEmailExpires}`) < new Date();
+
+    if (isExpired) {
+      res.status(400).send({ message: 'Token expired' });
+      return;
+    }
+
+    const updatedUser = await foundUser.updateOne({
+      confirmed: true,
+      confirmEmailToken: null,
+      confirmEmailExpires: null
+    });
+
+    if (!updatedUser) {
+      res.status(400).send({ message: 'Oops something went wrong' });
+      return;
+    }
+
+    res.status(200).send({ message: 'Email confirmed' });
   }
-
-  const isNotExpired =
-    new Date(`${foundUser.confirmEmailExpires}`) > new Date();
-
-  if (!isNotExpired) {
-    return res.status(400).send({ message: 'Token expired' });
-  }
-
-  await foundUser.updateOne({
-    confirmed: true,
-    confirmEmailToken: null,
-    confirmEmailExpires: null
-  });
-
-  return res.status(200).send({ message: 'Email confirmed' });
-});
+);
 
 export default router;
